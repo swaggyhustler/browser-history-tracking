@@ -1,0 +1,23 @@
+.container{
+    width: 70vw;
+    display: flex;
+    flex-direction: column;
+    .inner-cont{
+        input{
+            width: 12rem;
+            border-radius: 5px;
+            padding: 5px;
+            border: none;
+            display: flex;
+            gap: 3rem;
+        }
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 2rem;
+    }
+    .list{
+        display: flex;
+        gap: 2rem;
+    }
+}
