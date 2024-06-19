@@ -8,8 +8,7 @@ import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
-import TextField from '@mui/material/TextField';
-
+import TextField from "@mui/material/TextField";
 
 const HistoryTracker = () => {
   const [history, setHistory] = useState([]);
@@ -107,13 +106,25 @@ const HistoryTracker = () => {
       <h1>Browser History Tracker</h1>
       <div className="inner-cont">
         <TextField
-          className="inner-btn"
           id="standard-basic"
           label="Enter URL"
           type="search"
           variant="standard"
           onChange={(e) => setUrl(e.target.value)}
           value={url}
+          InputLabelProps={{
+            style: { color: "white" },
+          }}
+          inputProps={{
+            style: { color: "white" },
+          }}
+          sx={{
+            "& .MuiInput-underline:before": { borderBottomColor: "white", marginBottom: '5px', },
+            "& .MuiInput-underline:hover:before": {
+              borderBottomColor: "white", marginBottom: '5px',
+            },
+            "& .MuiInput-underline:after": { borderBottomColor: "white", marginBottom: '5px', },
+          }}
         />
         {/* <input
           type="text"
