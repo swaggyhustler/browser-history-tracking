@@ -29,7 +29,10 @@ db.once('open', () => {
 // Define a schema and model for history
 const historySchema = new mongoose.Schema({
     url: String,
-    timestamp: { type: Date, default: Date.now }
+    timestamp: { type: Date, default: Date.now },
+    sessionStart: {type: Date, default: Date.now},
+    sessionEnd: Date,
+    duration: String
 });
 
 const History = mongoose.model('History', historySchema);
@@ -37,7 +40,8 @@ const History = mongoose.model('History', historySchema);
 // Routes
 app.post('/api/history', async (req, res) => {
     const newHistory = new History({
-        url: req.body.url
+        url: req.body.url,
+        sessionStart: new Date()
     });
 
     try {
@@ -76,6 +80,26 @@ app.put('/api/history/:id', async (req, res) => {
         res.json(updatedHistory);
     } catch (err) {
         res.status(400).json({ message: err.message });
+    }
+});
+
+app.put('/api/history/session/:id', async(req, res)=>{
+    try{
+        const target=await History.findOne({_id: req.params.id});
+        const duration = new Date() - target.sessionStart;
+        const seconds = Math.floor((duration / 1000) % 60);
+        const minutes = Math.floor((duration / (1000 * 60)) % 60);
+        const hours = Math.floor((duration / (1000 * 60 * 60)) % 24);
+        const res= `${hours}h ${minutes}m ${seconds}s`;
+        const updatedHistory=await History.findByIdAndUpdate(
+            {_id: req.params.id},
+            {duration: res},
+            {new: true}
+        );
+        console.log(updatedHistory);
+        res.json(updatedHistory);
+    }catch(error){
+        res.status(400).json({message: error.message});
     }
 });
 
