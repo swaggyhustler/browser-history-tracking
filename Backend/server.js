@@ -2,18 +2,24 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const dotenv=require('dotenv');
 
 const app = express();
 
 // Middleware
+dotenv.config();
 app.use(bodyParser.json());
 app.use(cors());
 
 // MongoDB connection
-mongoose.connect('mongodb://localhost:27017/url-history', {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-});
+// mongoose.connect('mongodb://localhost:27017/url-history', {
+//     useNewUrlParser: true,
+//     useUnifiedTopology: true
+// });
+
+// mongoose.connect(`mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@cluster0.jqbdfdo.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`)
+
+mongoose.connect(`mongodb+srv://swaggyhustler:kUMlU32mshLQBDIs@cluster0.jqbdfdo.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`);
 
 const db = mongoose.connection;
 db.once('open', () => {
