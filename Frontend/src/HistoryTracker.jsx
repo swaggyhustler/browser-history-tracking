@@ -15,11 +15,16 @@ const HistoryTracker = () => {
   const [url, setUrl] = useState("");
   const [editUrl, setEditUrl] = useState("");
   const [currentUrl, setCurrentUrl] = useState(null);
+  const [currentId, setCurrentId] = useState(null);
   const dll = useRef(new DoublyLinkedList()).current;
 
   useEffect(() => {
     fetchHistory();
   }, []);
+  
+  useEffect(()=>{
+    endSession(currentId);
+  }, [currentId]);
 
   const fetchHistory = async () => {
     try {
@@ -42,6 +47,7 @@ const HistoryTracker = () => {
         setHistory([response.data, ...history]);
         dll.add(response.data.url);
         setCurrentUrl(dll.getCurrentUrl());
+        setCurrentId(response.data._id);
         setUrl("");
       } catch (err) {
         console.error(err);
@@ -90,16 +96,36 @@ const HistoryTracker = () => {
   const goBack = () => {
     const previousUrl = dll.goBack();
     if (previousUrl) {
+      const prevEntry=history.find(entry=>entry.url==previousUrl);
       setCurrentUrl(previousUrl);
+      setCurrentId(prevEntry._id);
     }
   };
 
   const goForward = () => {
     const nextUrl = dll.goForward();
     if (nextUrl) {
+      const nextEntry=history.find(entry=>entry.url==nextUrl);
       setCurrentUrl(nextUrl);
+      setCurrentId(nextEntry._id);
     }
   };
+
+  const endSession=async (id)=>{
+    try{
+      await axios.put(`http://localhost:5000/api/history/session/${id}`);
+    }catch(err){
+      console.log(err.message);
+    }
+  }
+
+  // const calculateDuration = (start, end) => {
+  //       const duration = new Date(end) - new Date(start);
+  //       const seconds = Math.floor((duration / 1000) % 60);
+  //       const minutes = Math.floor((duration / (1000 * 60)) % 60);
+  //       const hours = Math.floor((duration / (1000 * 60 * 60)) % 24);
+  //       return `${hours}h ${minutes}m ${seconds}s`;
+  //   };
 
   return (
     <div className="container">
@@ -181,6 +207,10 @@ const HistoryTracker = () => {
                   <button onClick={() => updateHistory(entry._id)}>
                     Update
                   </button>
+                </TableCell>
+                <TableCell align="right">
+                  <span>{entry.duration?`Session Duration: ${entry.duration}`:'Monitoring Session'}</span>
+                  {console.log(entry.sessionStart)}
                 </TableCell>
               </TableRow>
             ))}
