@@ -1,1 +1,1 @@
-The Team
+Simple Browser History tracking application.
