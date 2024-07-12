@@ -13,7 +13,7 @@ import TextField from "@mui/material/TextField";
 const HistoryTracker = () => {
   const [history, setHistory] = useState([]);
   const [url, setUrl] = useState("");
-  const [editUrl, setEditUrl] = useState("");
+  // const [editUrl, setEditUrl] = useState("");
   const [currentUrl, setCurrentUrl] = useState(null);
   const [currentId, setCurrentId] = useState(null);
   const dll = useRef(new DoublyLinkedList()).current;
@@ -75,28 +75,28 @@ const HistoryTracker = () => {
     }
   };
 
-  const updateHistory = async (id) => {
-    if (editUrl) {
-      try {
-        const response = await axios.put(
-          `http://localhost:5000/api/history/${id}`,
-          { url: editUrl }
-        );
-        setHistory(
-          history.map((entry) => (entry._id === id ? response.data : entry))
-        );
-        // Rebuild the DLL since we have updated an entry
-        dll.reset();
-        history
-          .map((entry) => (entry._id === id ? response.data : entry))
-          .forEach((entry) => dll.add(entry.url));
-        setCurrentUrl(dll.getCurrentUrl());
-        setEditUrl("");
-      } catch (err) {
-        console.error(err);
-      }
-    }
-  };
+  // const updateHistory = async (id) => {
+  //   if (editUrl) {
+  //     try {
+  //       const response = await axios.put(
+  //         `http://localhost:5000/api/history/${id}`,
+  //         { url: editUrl }
+  //       );
+  //       setHistory(
+  //         history.map((entry) => (entry._id === id ? response.data : entry))
+  //       );
+  //       // Rebuild the DLL since we have updated an entry
+  //       dll.reset();
+  //       history
+  //         .map((entry) => (entry._id === id ? response.data : entry))
+  //         .forEach((entry) => dll.add(entry.url));
+  //       setCurrentUrl(dll.getCurrentUrl());
+  //       setEditUrl("");
+  //     } catch (err) {
+  //       console.error(err);
+  //     }
+  //   }
+  // };
 
   const goBack = () => {
     const previousUrl = dll.goBack();
