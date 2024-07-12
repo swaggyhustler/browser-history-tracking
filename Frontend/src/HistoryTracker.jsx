@@ -23,8 +23,13 @@ const HistoryTracker = () => {
   }, []);
   
   useEffect(()=>{
-    endSession(currentId);
-  }, [currentId]);
+    const preUrl=dll.goBack();
+    const preEntry=history.find(entry=>entry.url==preUrl);
+    if(preEntry){
+      endSession(preEntry._id);
+      console.log("Targeted twice");
+    }
+  }, [currentUrl]);
 
   const fetchHistory = async () => {
     try {
@@ -96,6 +101,7 @@ const HistoryTracker = () => {
   const goBack = () => {
     const previousUrl = dll.goBack();
     if (previousUrl) {
+      endSession(currentId);
       const prevEntry=history.find(entry=>entry.url==previousUrl);
       setCurrentUrl(previousUrl);
       setCurrentId(prevEntry._id);
@@ -105,6 +111,7 @@ const HistoryTracker = () => {
   const goForward = () => {
     const nextUrl = dll.goForward();
     if (nextUrl) {
+      endSession(currentId);
       const nextEntry=history.find(entry=>entry.url==nextUrl);
       setCurrentUrl(nextUrl);
       setCurrentId(nextEntry._id);
@@ -113,20 +120,13 @@ const HistoryTracker = () => {
 
   const endSession=async (id)=>{
     try{
-      await axios.put(`http://localhost:5000/api/history/session/${id}`);
+      if(id){
+        await axios.put(`http://localhost:5000/api/history/session/${id}`);
+      }
     }catch(err){
       console.log(err.message);
     }
   }
-
-  // const calculateDuration = (start, end) => {
-  //       const duration = new Date(end) - new Date(start);
-  //       const seconds = Math.floor((duration / 1000) % 60);
-  //       const minutes = Math.floor((duration / (1000 * 60)) % 60);
-  //       const hours = Math.floor((duration / (1000 * 60 * 60)) % 24);
-  //       return `${hours}h ${minutes}m ${seconds}s`;
-  //   };
-
   return (
     <div className="container">
       <h1>Browser History Tracker</h1>
@@ -152,12 +152,6 @@ const HistoryTracker = () => {
             "& .MuiInput-underline:after": { borderBottomColor: "white", marginBottom: '5px', },
           }}
         />
-        {/* <input
-          type="text"
-          value={url}
-          onChange={(e) => setUrl(e.target.value)}
-          placeholder="Enter URL"
-        /> */}
         <button onClick={addHistory}>Add URL</button>
         <button onClick={goBack}>Go Back</button>
         <button onClick={goForward}>Go Forward</button>
@@ -188,58 +182,19 @@ const HistoryTracker = () => {
                   </button>
                 </TableCell>
                 <TableCell align="right">
-                  <TextField
-                    id="standard-basic"
-                    label="Enter URL"
-                    type="search"
-                    variant="standard"
-                    onChange={(e) => setEditUrl(e.target.value)}
-                    value={editUrl}
-                  />
-                  {/* <input
-                    type="text"
-                    // value={editUrl}
-                    onChange={(e) => setEditUrl(e.target.value)}
-                    placeholder="Edit URL"
-                  /> */}
-                </TableCell>
-                <TableCell align="right">
-                  <button onClick={() => updateHistory(entry._id)}>
-                    Update
+                  <button >
+                    <a target="_blank" href={`https://${entry.url.substring(4)}`}>Open</a>
                   </button>
                 </TableCell>
                 <TableCell align="right">
                   <span>{entry.duration?`Session Duration: ${entry.duration}`:'Monitoring Session'}</span>
-                  {console.log(entry.sessionStart)}
+                  {console.log(entry.duration)}
                 </TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
       </TableContainer>
-      {/* <ul>
-        {history.map((entry) => (
-          <li key={entry._id} className="list">
-            <span onClick={() => setCurrentUrl(entry.url)}>                
-              {entry.url} - {new Date(entry.timestamp).toLocaleString()}
-            </span>  
-            <button
-              onClick={() => {
-                deleteHistory(entry._id);
-              }}
-            >
-              Delete
-            </button>
-            <input
-              type="text"
-              // value={editUrl}
-              onChange={(e) => setEditUrl(e.target.value)}
-              placeholder="Edit URL"
-            />
-            <button onClick={() => updateHistory(entry._id)}>Update</button>
-          </li>
-        ))}
-      </ul> */}
     </div>
   );
 };

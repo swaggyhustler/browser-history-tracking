@@ -30,8 +30,6 @@ db.once('open', () => {
 const historySchema = new mongoose.Schema({
     url: String,
     timestamp: { type: Date, default: Date.now },
-    sessionStart: {type: Date, default: Date.now},
-    sessionEnd: Date,
     duration: String
 });
 
@@ -86,14 +84,14 @@ app.put('/api/history/:id', async (req, res) => {
 app.put('/api/history/session/:id', async(req, res)=>{
     try{
         const target=await History.findOne({_id: req.params.id});
-        const duration = new Date() - target.sessionStart;
+        const duration = new Date() - target.timestamp;
         const seconds = Math.floor((duration / 1000) % 60);
         const minutes = Math.floor((duration / (1000 * 60)) % 60);
         const hours = Math.floor((duration / (1000 * 60 * 60)) % 24);
-        const res= `${hours}h ${minutes}m ${seconds}s`;
+        const result= `${hours}h ${minutes}m ${seconds}s`;
         const updatedHistory=await History.findByIdAndUpdate(
             {_id: req.params.id},
-            {duration: res},
+            {duration: result},
             {new: true}
         );
         console.log(updatedHistory);
